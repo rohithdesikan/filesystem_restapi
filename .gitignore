@@ -1,0 +1,6 @@
+# Cache
+.pytest_cache
+
+# Environment
+flaskapp
+Pipfile
