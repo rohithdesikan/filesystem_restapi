@@ -2,15 +2,25 @@
 import os
 import shutil
 from typing import Dict
-from fastapi import FastAPI, HTTPException, Request, Query
+from fastapi import FastAPI, HTTPException, Request, Query, Body
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
+# TODO: WRITE TESTS USING FASTAPI'S TEST CLIENT
+# TODO: DOCKERIZE THE APP AND TEST THE DOCKER CONTAINER ON THE WORK WINDOWS COMPUTER
+# TODO: CREATE A HELM CHART
+
+######## POTENTIAL NEXT STEPS:
+# TODO: Add another variable for create_permissions that only allows file creation if admin access is available
+# TODO: The success messages can be deleted if it is not necessary
+
 # Instantiate the FastAPI 
-app = FastAPI()
+app = FastAPI(name = 'Local File Directory Browsing Service', 
+            description = "An app that can browse a local file system given a root directory upon launching and can add or empty/delete files or folders",
+            version = "0.1.0")
 
 # Get the environment variable from the .sh script
-root_path = os.getenv("TEST_PATH", os.getcwd())
+root_path = os.getenv("ROOT_DIR", os.getcwd())
 
 
 def does_exist(path: str):
@@ -144,7 +154,15 @@ def sub_folder(sub_path: str):
 
 
 class CreateFolder(BaseModel):
+
     create_name: str
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "create_name": "test/test1",
+            }
+    }
 
 @app.post('/createfolder')
 def create_folder(create: CreateFolder):
@@ -166,8 +184,18 @@ def create_folder(create: CreateFolder):
     
 
 class CreateFile(BaseModel):
+
     create_name: str
     create_content: str
+
+
+    class Config:
+        schema_extra = {
+            "example": {
+                'create_name': 'test1/test1_1.txt',
+                'create_content': 'This is a sample text file that is generated with a create POST request'
+            }
+    }
 
 @app.post('/createfile')
 def create_file(create: CreateFile):
@@ -199,7 +227,15 @@ def create_file(create: CreateFile):
 
 
 class EmptyFolder(BaseModel):
+
     delete_name: str
+
+    class Config:
+        schema_extra = {
+            "examples": {
+                'delete_name': 'test1',
+            }
+    }
 
 @app.delete('/emptyfolder')
 def empty_folder(empty: EmptyFolder):
@@ -208,9 +244,16 @@ def empty_folder(empty: EmptyFolder):
     Args:
         empty (EmptyFolder): Inherits from the EmptyFolder class. If the request is incorrect, it is verified by Pydantic's data validation object. delete_name has to be a str
 
+    Raises:
+        HTTPException: If this is a .txt file, raise an 400 error, this API cannot empty the contents of a text file. Can add this functionality if neede
+
     Returns:
         fastapi.response.JSONResponse: A simple dict showing a success message. 
     """    
+
+    # Make sure the client is not trying to empty a file, only a folder
+    if empty.endwith('.txt'):
+        raise HTTPException(status_code=400, detail="Can only empty folders, not files and file contents")
 
     # Create the full path and make sure it exists
     full_folder_path = os.path.join(root_path, empty.delete_name)
@@ -227,7 +270,15 @@ def empty_folder(empty: EmptyFolder):
 
 
 class DeleteFolder(BaseModel):
+
     delete_name: str
+
+    class Config:
+        schema_extra = {
+            "example": {
+                'delete_name': 'test1',
+            }
+    }
 
 @app.delete('/deletefolder')
 def delete_folder(delete: DeleteFolder):
@@ -256,7 +307,15 @@ def delete_folder(delete: DeleteFolder):
 
 
 class DeleteFile(BaseModel):
+
     delete_name: str
+
+    class Config:
+        schema_extra = {
+            "example": {
+                'delete_name': 'test1/test1.txt',
+            }
+    }
 
 @app.delete('/deletefile')
 def delete_file(delete: DeleteFile):
@@ -276,8 +335,3 @@ def delete_file(delete: DeleteFile):
     os.remove(full_file_path)
 
     return {'Message' : 'File Deleted Successfully'}
-
-
-######## POTENTIAL NEXT STEPS:
-# TODO: Add another variable for create_permissions that only allows file creation if admin access is available
-# TODO: The success messages can be deleted if it is not necessary
