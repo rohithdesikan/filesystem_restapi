@@ -1,6 +1,10 @@
 # Cache
 .pytest_cache
+.DS_Store
 
 # Environment
 flaskapp
 Pipfile
+
+# VSCode
+.vscode
