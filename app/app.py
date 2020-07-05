@@ -6,7 +6,6 @@ from fastapi import FastAPI, HTTPException, Request, Query, Body
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
-# TODO: WRITE TESTS USING FASTAPI'S TEST CLIENT
 # TODO: DOCKERIZE THE APP AND TEST THE DOCKER CONTAINER ON THE WORK WINDOWS COMPUTER
 # TODO: CREATE A HELM CHART
 
@@ -20,8 +19,7 @@ app = FastAPI(name = 'Local File Directory Browsing Service',
             version = "0.1.0")
 
 # Get the environment variable from the .sh script
-root_path = os.getenv("ROOT_DIR", os.getcwd())
-
+root_path = os.environ.get("ROOT_DIR", os.getcwd())
 
 def does_exist(path: str):
     """Checks whether a file path exists on the local file system and raises an error if not. This can be used for both files and folders. 
@@ -82,7 +80,7 @@ def get_file_content(file_path: str):
 
     # Run a quick test to make sure the file path is a text file
     if not file_path.endswith('.txt'):
-        raise HTTPException(status_code=400, detail="Only a file with extension .txt can be opened")
+        raise HTTPException(status_code=422, detail="Only a file with extension .txt can be opened")
 
     with open(file_path, 'rb') as f:
         contents = f.read().decode('utf-8')
@@ -160,7 +158,7 @@ class CreateFolder(BaseModel):
     class Config:
         schema_extra = {
             "example": {
-                "create_name": "test/test1",
+                "create_name": "test1/test1_1",
             }
     }
 
@@ -177,10 +175,14 @@ def create_folder(create: CreateFolder):
 
     # Create the full path and make sure it exists
     full_folder_path = os.path.join(root_path, create.create_name)
-    does_exist(full_folder_path)
+
+    # If a file path exists, then no action is taken. This can be changed to return an error if needed.
+    if os.path.exists(full_folder_path):
+        raise HTTPException(status_code=422, detail="Folder already exists, no action taken")
+
     os.mkdir(full_folder_path)
 
-    return {'Message' : 'Folder Created Successfully'}
+    return {'detail' : 'Folder Created Successfully'}
     
 
 class CreateFile(BaseModel):
@@ -211,19 +213,21 @@ def create_file(create: CreateFile):
         fastapi.response.JSONResponse: A simple dict showing a success message. 
     """    
 
+    # Can only create text files
     if create.create_name.split('.')[-1] != 'txt':
-        raise HTTPException(status_code=400, detail="Files of type other than .txt cannot be created")
-
-    if '.txt' not in create.create_name:
-        create.create_name += '.txt'
+        raise HTTPException(status_code=422, detail='Files of type other than .txt cannot be created')
 
     # Create the full path and make sure it exists
     full_file_path = os.path.join(root_path, create.create_name)
-    does_exist(full_file_path)
+
+    # If a file path exists, then no action is taken. This can be changed to return an error if needed
+    if os.path.exists(full_file_path):
+        raise HTTPException(status_code=422, detail="File already exists, no action taken")
+
     with open(full_file_path, 'w') as file:
         file.write(create.create_content)
 
-    return {'Message' : 'File Created Successfully'}
+    return {'detail' : 'File Created Successfully'}
 
 
 class EmptyFolder(BaseModel):
@@ -232,7 +236,7 @@ class EmptyFolder(BaseModel):
 
     class Config:
         schema_extra = {
-            "examples": {
+            "example": {
                 'delete_name': 'test1',
             }
     }
@@ -252,8 +256,8 @@ def empty_folder(empty: EmptyFolder):
     """    
 
     # Make sure the client is not trying to empty a file, only a folder
-    if empty.endwith('.txt'):
-        raise HTTPException(status_code=400, detail="Can only empty folders, not files and file contents")
+    if empty.delete_name.endswith('.txt'):
+        raise HTTPException(status_code=422, detail="Note that empty_folder is only to empty a folder, not to empty the contents of files")
 
     # Create the full path and make sure it exists
     full_folder_path = os.path.join(root_path, empty.delete_name)
@@ -266,7 +270,7 @@ def empty_folder(empty: EmptyFolder):
         for d in dirs:
             shutil.rmtree(os.path.join(root, d))
     
-    return {'Message' : 'Folder Emptied Successfully'}
+    return {'detail' : 'Folder Emptied Successfully'}
 
 
 class DeleteFolder(BaseModel):
@@ -299,11 +303,11 @@ def delete_folder(delete: DeleteFolder):
     does_exist(full_folder_path)
 
     if len(os.listdir(full_folder_path)) > 0:
-        raise HTTPException(status_code=400, detail="A folder must be empty before deletion. Use the empty folder method")
+        raise HTTPException(status_code=422, detail="A folder must be empty before deletion. Use the empty folder method")
 
     os.rmdir(full_folder_path)
 
-    return {'Message' : 'Folder Deleted Successfully'}
+    return {'detail' : 'Folder Deleted Successfully'}
 
 
 class DeleteFile(BaseModel):
@@ -334,4 +338,4 @@ def delete_file(delete: DeleteFile):
 
     os.remove(full_file_path)
 
-    return {'Message' : 'File Deleted Successfully'}
+    return {'detail' : 'File Deleted Successfully'}
