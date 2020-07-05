@@ -6,12 +6,10 @@ from fastapi import FastAPI, HTTPException, Request, Query, Body
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
-# TODO: DOCKERIZE THE APP AND TEST THE DOCKER CONTAINER ON THE WORK WINDOWS COMPUTER
 # TODO: CREATE A HELM CHART
 
 ######## POTENTIAL NEXT STEPS:
 # TODO: Add another variable for create_permissions that only allows file creation if admin access is available
-# TODO: The success messages can be deleted if it is not necessary
 
 # Instantiate the FastAPI 
 app = FastAPI(name = 'Local File Directory Browsing Service', 

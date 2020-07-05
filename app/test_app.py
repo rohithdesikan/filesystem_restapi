@@ -6,6 +6,9 @@ from fastapi import FastAPI, Header, HTTPException
 from fastapi.testclient import TestClient
 from .app import app
 
+# TODO: MUST FIGURE OUT HOW TO CREATE A TEMPORARY FOLDER AND DIRECTORY STRUCTURE IN PYTEST FOR THE ENTIRE MODULE (MUST BE CONNECTED TO ROOT_DIR)
+# * Or at least as an intermediate solution, must explore creating and deleting files/folders within each test
+
 client = TestClient(app)
 
 # Make a test folder in this directory with all the necessary sub files and folders to make sure all the tests work
