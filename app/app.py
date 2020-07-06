@@ -4,12 +4,13 @@ import shutil
 from typing import Dict
 from fastapi import FastAPI, HTTPException, Request, Query, Body
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel
+from pydantic import BaseModel # Pydantic helps to parse json request bodies
 
+# TODO: ADD MORE DOCUMENTATION TO THE README
+# TODO: ADD A PUT METHOD 
+# TODO: CHANGE THE TESTING SUITE TO ADD AND DELETE FILES AND FOLDERS AS NEEDED WITHIN EACH TEST, IT'S STILL FAST ENOUGH FOR A SMALL APP
+# TODO: ADD PERMISSION AND OWNER CONTROLS FOR FILE CREATION
 # TODO: CREATE A HELM CHART
-
-######## POTENTIAL NEXT STEPS:
-# TODO: Add another variable for create_permissions that only allows file creation if admin access is available
 
 # Instantiate the FastAPI 
 app = FastAPI(name = 'Local File Directory Browsing Service', 
@@ -80,8 +81,9 @@ def get_file_content(file_path: str):
     if not file_path.endswith('.txt'):
         raise HTTPException(status_code=422, detail="Only a file with extension .txt can be opened")
 
-    with open(file_path, 'rb') as f:
-        contents = f.read().decode('utf-8')
+    # Open the file while taking care to decode as utf-8
+    with open(file_path, 'r', errors = 'ignore') as f:
+        contents = f.read().splitlines()
 
     return {'file_contents': contents}
 
