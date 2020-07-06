@@ -176,7 +176,7 @@ def create_folder(create: CreateFolder):
     # Create the full path and make sure it exists
     full_folder_path = os.path.join(root_path, create.create_name)
 
-    # If a file path exists, then no action is taken. This can be changed to return an error if needed.
+    # If a file path exists, then no action is taken. This can be changed to return a success status message that the request was received but no action was taken.
     if os.path.exists(full_folder_path):
         raise HTTPException(status_code=422, detail="Folder already exists, no action taken")
 

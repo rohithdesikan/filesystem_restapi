@@ -63,15 +63,15 @@ Furthermore, within app.py, each function has been documented to show the proces
 
 
 ## Testing
-I followed test driven development strategy writing up the necessary tests, especially for the `GET` method before testing. I used FastAPI's client testing service called TestClient which uses pytest and requests in the background. To run tests, in the app directory, run:
+I followed test driven development strategy writing up the necessary tests, especially for the `GET` method before testing. I used FastAPI's client testing service called TestClient which uses pytest and requests in the background. To run tests, first create a bash variable called ROOT_DIR which takes in the path to `.../app/test_folder`. `test_folder` is a new folder which will be created during the test. After this, in the app directory, run:
 
 `pytest`
 
-Note that a test_folder is created in this exercise. This needs to be deleted before running the tests again. 
+Note again that a `test_folder` is created in this exercise. This needs to be deleted before running the tests again. These tests will not work if the `test_folder` exists as it cannot test the creation of a new folder or file. 
 
 ## Additional Work
+* Change the testing suite to add and delete files and folders as needed within each test instead of across the entire script or figure out a way to use a test folder across multiple test functions.  
 * Implement a `PUT` method, which will follow the same strategy as the `POST` and `DELETE` methods and some additional tests
-* Do `emptyfolder` and `deletefolder` need to be separated? This is a design choice that can be changed. Likewise, if `createfolder` and `createfile` 
-* Change the testing suite to add and delete files and folders as needed within each test instead of across the entire script or figure out a way to use a test folder across multiple test functions. 
+* Do `emptyfolder` and `deletefolder` need to be separated? This is a design choice that can be changed. Likewise, `createfolder` and `createfile` can be combined into a single `create` if necessary. 
 * Add permission and owner controls for file creation
-* CREATE A HELM CHART
+* Create a helm chart
