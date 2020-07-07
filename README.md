@@ -63,7 +63,7 @@ Furthermore, within app.py, each function has been documented to show the proces
 
 
 ## Testing
-I followed test driven development strategy writing up the necessary tests, especially for the `GET` method before testing. I used FastAPI's client testing service called TestClient which uses pytest, starlette and requests in the background. To run tests, first create a bash variable called ROOT_DIR which takes in the path to `.../app`. During the testing process, a new folder named `test_folder` will be created and torn down. However, since the app expects a bash variable, the rootdir needs to be changed from whatever directory being browsed through the Docker container above to this `app.py` and `test.py` directory. Once in the app directory, run:
+I followed test driven development strategy writing up the necessary tests, especially for the `GET` method before testing. I used FastAPI's client testing service called TestClient which uses pytest, starlette and requests in the background. To run tests, first create a bash variable called `ROOT_DIR` which takes in the path to `.../app`. During the testing process, a new folder named `test_folder` will be created and torn down. However, since the app expects a bash variable, the rootdir needs to be changed from whatever directory being browsed through the Docker container above to this `app.py` and `test.py` directory. Once in the app directory, run:
 
 `pytest`
 
