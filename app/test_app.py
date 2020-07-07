@@ -64,8 +64,7 @@ def create_test_folder():
     yield os.path.join(os.getcwd(), 'test_folder')
 
     # Remove the entire test_folder which was only created to test each of these methods
-    if os.path.exists(os.path.join(os.getcwd(), 'test_folder')):
-        shutil.rmtree('test_folder')
+    shutil.rmtree('test_folder')
 
 
 # Steps in all tests:
@@ -153,7 +152,7 @@ def test_sub_folder_blank(create_test_folder):
 # --------------------------------------------------------
 def test_create_folder(create_test_folder):
     response = client.post("/createfolder", json = {'create_name': 'test_folder/newfolder'})
-    # assert response.status_code == 200
+    assert response.status_code == 200
     assert 'newfolder' in os.listdir(test_path)
 
 def test_create_folder_exists(create_test_folder):
