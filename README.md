@@ -22,7 +22,7 @@ The user can go as deep as needed within sub folders. An error is raised if the 
 
 
 ### GET /file.txt or /folder/file.txt
-The user is able to get the contents of a text file. For example, when inputting a request, it should be /test_file.txt. As an extension to the exercise, an appropriate error message is returned if the file in the request is not a txt file. For a text file, the return object is as follows:
+The user is able to get the contents of a text file. For example, when inputting a request, it should be /test_file.txt. Note that the .txt extention must be provided. As an extension to the exercise, an appropriate error message is returned if the file in the request is not a txt file. For a text file, the return object is as follows:
 
 * `is_file`: True
 * `name`: "filename"
@@ -45,14 +45,14 @@ As for the `deletefile` request, this directly deletes the file given the locati
 
 
 ## Running the application
-Since this app has been Dockerized, 2 bash scripts have been provided for convenience. The first is a docker-build.sh file which builds the docker image based on the Dockerfile. The Dockerfile pulls the fastapi image from DockerHub, then creates a working directory, copies the contents of this directory into the working directory (including the requirements.txt) into the working directory inside the container, installs the necessary python packages and runs the uvicorn app/app:app bash command on the local host. 
+Since this app has been Dockerized, 2 bash scripts have been provided for convenience. The first is a docker-build.sh file which builds the docker image based on the Dockerfile. The Dockerfile pulls the fastapi image from DockerHub, then creates a working directory, copies the contents of this directory (including the requirements.txt) into the working directory inside the container, installs the necessary python packages and runs the uvicorn app/app:app bash command on the local host. 
 
-As for starting up the actual container, in the docker-run.sh bash script, it asks for a user input, which is the home directory from where to launch the app. Once user input is received, the app is named fbappv1, port 8000 is mapped from the host to the container, the `homevar` bash variable that was received as input is bind mounted as a volume so that the home directory and all sub folders/files are replicated inside the container. Finally, an internal environment variable, `ROOT_DIR` is set to be the bind mounted directory inside the Docker container which is read by the app. Note that the FastAPI specific inputs (uvicorn app/app:app) was provided in the Dockerfile whereas the runtime parameters are set in the docker-run.sh script.
+As for starting up the actual container, in the docker-run.sh bash script, it asks for a user input, which is the home directory from where to launch the app. Once user input is received, the app is named `fbappv1`, port 8000 is mapped from the host to the container and the `homedir` bash variable that was received as input is the volume that is bind mounted so that the home directory and all sub folders/files are replicated inside the container. Finally, an internal environment variable, `ROOT_DIR` is set to be this bind mounted directory inside the Docker container which is read by the app. Note that the FastAPI specific inputs (uvicorn app/app:app) was provided in the Dockerfile whereas the runtime parameters are set in the docker-run.sh script.
 
 So, to build and run the image, in the terminal (Mac), run the following commands
 * cd << folder where this Dockerfile is stored>>
 * bash docker-build.sh
-* bash docker-run.sh: When it asks for a home directory, put in: "/Users/<< username >>/..." to the directory you wish to browse. This is the `ROOT_DIR` variable in app.py which will open the app in this directory
+* bash docker-run.sh: When it asks for a home directory, put in: `/Users/<< username >>/...` to the directory you wish to browse. This is the `ROOT_DIR` variable in app.py which will open the app in this directory
 * Then go to `localhost:8000` and browse the app on the web browser or from the command line or from a python script using the requests library. The docker ps command is also run automatically. 
 
 
