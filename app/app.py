@@ -6,9 +6,7 @@ from fastapi import FastAPI, HTTPException, Request, Query, Body
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel # Pydantic helps to parse json request bodies
 
-# TODO: ADD MORE DOCUMENTATION TO THE README
 # TODO: ADD A PUT METHOD 
-# TODO: CHANGE THE TESTING SUITE TO ADD AND DELETE FILES AND FOLDERS AS NEEDED WITHIN EACH TEST, IT'S STILL FAST ENOUGH FOR A SMALL APP
 # TODO: ADD PERMISSION AND OWNER CONTROLS FOR FILE CREATION
 # TODO: CREATE A HELM CHART
 

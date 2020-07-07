@@ -47,30 +47,27 @@ As for the `deletefile` request, this directly deletes the file given the locati
 ## Running the application
 Since this app has been Dockerized, 2 bash scripts have been provided for convenience. The first is a docker-build.sh file which builds the docker image based on the Dockerfile. The Dockerfile pulls the fastapi image from DockerHub, then creates a working directory, copies the app and requirements into the working directory inside the container, installs the necessary python packages and runs the uvicorn app:app bash command on the local host. 
 
-As for starting up the actual container, in the docker-run.sh bash script, it asks for a user input, which is the home directory from where to launch the app. Once user input is received, the app is named fbappv1, port 8000 is mapped from the host to the container, the `homevar` bash variable that was received as input. Note that the FastAPI specific inputs (uvicorn app:app) was provided in the Dockerfile whereas the runtime parameters are set in the docker-run.sh script.
+As for starting up the actual container, in the docker-run.sh bash script, it asks for a user input, which is the home directory from where to launch the app. Once user input is received, the app is named fbappv1, port 8000 is mapped from the host to the container, the `homevar` bash variable that was received as input is bind mounted as a volume so that the home directory and all sub folders/files are replicated inside the container. Finally, an internal environment variable, `ROOT_DIR` is set to be the bind mounted directory inside the Docker container which is read by the app. Note that the FastAPI specific inputs (uvicorn app:app) was provided in the Dockerfile whereas the runtime parameters are set in the docker-run.sh script.
 
 So, to build and run the image, in the terminal (Mac), run the following commands
 * cd << folder where this Dockerfile is stored>>
 * bash docker-build.sh
-* bash docker-run.sh: When it asks for a home directory, put in: "/Users/<< username >>/..." to the directory you wish to browse
-* Then go to localhost:8000 and browse the app on the web browser or from the command line or from a python script using the requests library. The docker ps command is also run automatically. 
+* bash docker-run.sh: When it asks for a home directory, put in: "/Users/<< username >>/..." to the directory you wish to browse. This is the `ROOT_DIR` variable in app.py which will open the app in this directory
+* Then go to `localhost:8000` and browse the app on the web browser or from the command line or from a python script using the requests library. The docker ps command is also run automatically. 
 
 
 ## Documentation
-Once the app is running, feel free to go to localhost:8000/docs to explore full Swagger UI documentation with examples and execute requests as needed. 
+Once the app is running, feel free to go to `localhost:8000/docs` to explore full Swagger UI documentation with examples and execute requests as needed. 
 
 Furthermore, within app.py, each function has been documented to show the process. 
 
 
 ## Testing
-I followed test driven development strategy writing up the necessary tests, especially for the `GET` method before testing. I used FastAPI's client testing service called TestClient which uses pytest and requests in the background. To run tests, first create a bash variable called ROOT_DIR which takes in the path to `.../app/test_folder`. `test_folder` is a new folder which will be created during the test. After this, in the app directory, run:
+I followed test driven development strategy writing up the necessary tests, especially for the `GET` method before testing. I used FastAPI's client testing service called TestClient which uses pytest, starlette and requests in the background. To run tests, first create a bash variable called ROOT_DIR which takes in the path to `.../app`. During the testing process, a new folder named `test_folder` will be created and torn down. However, since the app expects a bash variable, the rootdir needs to be changed from whatever directory being browsed through the Docker container above to this `app.py` and `test.py` directory. Once in the app directory, run:
 
 `pytest`
 
-Note again that a `test_folder` is created in this exercise. This needs to be deleted before running the tests again. These tests will not work if the `test_folder` exists as it cannot test the creation of a new folder or file. 
-
 ## Additional Work
-* Change the testing suite to add and delete files and folders as needed within each test instead of across the entire script or figure out a way to use a test folder across multiple test functions.  
 * Implement a `PUT` method, which will follow the same strategy as the `POST` and `DELETE` methods and some additional tests
 * Do `emptyfolder` and `deletefolder` need to be separated? This is a design choice that can be changed. Likewise, `createfolder` and `createfile` can be combined into a single `create` if necessary. 
 * Add permission and owner controls for file creation
